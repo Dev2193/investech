@@ -1,153 +1,220 @@
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Activity, BarChart3 } from "lucide-react";
-import { addTechnicalFeatures, PriceData } from "@/utils/technicalAnalysis";
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { TrendingUp, TrendingDown, Activity, Calendar } from 'lucide-react';
 
-// Mock price data for demonstration
-const mockPriceData: PriceData[] = [
-  { date: '2024-01-01', close: 100, ticker: 'AAPL' },
-  { date: '2024-01-02', close: 102, ticker: 'AAPL' },
-  { date: '2024-01-03', close: 98, ticker: 'AAPL' },
-  { date: '2024-01-04', close: 105, ticker: 'AAPL' },
-  { date: '2024-01-05', close: 103, ticker: 'AAPL' },
-  { date: '2024-01-08', close: 107, ticker: 'AAPL' },
-  { date: '2024-01-09', close: 109, ticker: 'AAPL' },
-  { date: '2024-01-10', close: 108, ticker: 'AAPL' },
-  { date: '2024-01-11', close: 112, ticker: 'AAPL' },
-  { date: '2024-01-12', close: 115, ticker: 'AAPL' },
-  { date: '2024-01-15', close: 118, ticker: 'AAPL' },
-  { date: '2024-01-16', close: 116, ticker: 'AAPL' },
-  { date: '2024-01-17', close: 120, ticker: 'AAPL' },
-  { date: '2024-01-18', close: 122, ticker: 'AAPL' },
-  { date: '2024-01-19', close: 119, ticker: 'AAPL' },
-  { date: '2024-01-22', close: 125, ticker: 'AAPL' },
-  { date: '2024-01-23', close: 128, ticker: 'AAPL' },
-];
+interface TechnicalFeatures {
+  ret_5d: number;
+  ret_20d: number;
+  ret_60d: number;
+  ret_120d: number;
+  ret_250d: number;
+  vol_5d: number;
+  vol_20d: number;
+  vol_60d: number;
+  vol_120d: number;
+  vol_250d: number;
+  drawdown: number;
+  mom_12m: number;
+  dayofweek: number;
+}
 
-export function TechnicalAnalysis() {
-  const technicalData = addTechnicalFeatures(mockPriceData);
-  const latestData = technicalData[technicalData.length - 1];
+interface TechnicalAnalysisProps {
+  ticker?: string;
+  features?: TechnicalFeatures;
+}
 
-  const formatPercentage = (value: number) => `${(value * 100).toFixed(2)}%`;
-  const formatDrawdown = (value: number) => `${(value * 100).toFixed(2)}%`;
-
+export function TechnicalAnalysis({ 
+  ticker = "PORTFOLIO", 
+  features = {
+    ret_5d: 0.015,
+    ret_20d: 0.042,
+    ret_60d: -0.018,
+    ret_120d: 0.089,
+    ret_250d: 0.124,
+    vol_5d: 0.012,
+    vol_20d: 0.018,
+    vol_60d: 0.024,
+    vol_120d: 0.021,
+    vol_250d: 0.026,
+    drawdown: -0.065,
+    mom_12m: 0.098,
+    dayofweek: new Date().getDay()
+  }
+}: TechnicalAnalysisProps) {
+  const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;
+  
   const getReturnColor = (value: number) => {
-    if (value > 0.05) return "text-success";
-    if (value < -0.05) return "text-destructive";
-    return "text-muted-foreground";
+    if (value > 0.05) return 'text-green-600';
+    if (value > 0) return 'text-green-500';
+    if (value < -0.05) return 'text-red-600';
+    return 'text-red-500';
   };
 
-  const getVolatilityLevel = (value: number) => {
-    if (value > 0.3) return { level: "High", color: "destructive" };
-    if (value > 0.15) return { level: "Medium", color: "warning" };
-    return { level: "Low", color: "success" };
+  const getDayName = (dayNum: number) => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[dayNum] || 'Unknown';
   };
+
+  const returnPeriods = [
+    { period: '5d', value: features.ret_5d, label: '5 Day Return' },
+    { period: '20d', value: features.ret_20d, label: '20 Day Return' },
+    { period: '60d', value: features.ret_60d, label: '60 Day Return' },
+    { period: '120d', value: features.ret_120d, label: '120 Day Return' },
+    { period: '250d', value: features.ret_250d, label: '1 Year Return' },
+  ];
+
+  const volatilityPeriods = [
+    { period: '5d', value: features.vol_5d, label: '5 Day Volatility' },
+    { period: '20d', value: features.vol_20d, label: '20 Day Volatility' },
+    { period: '60d', value: features.vol_60d, label: '60 Day Volatility' },
+    { period: '120d', value: features.vol_120d, label: '120 Day Volatility' },
+    { period: '250d', value: features.vol_250d, label: '1 Year Volatility' },
+  ];
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-card to-secondary/20 border-border/50">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <BarChart3 className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-semibold text-foreground">Technical Analysis Features</h3>
-          </div>
-          <Badge variant="outline" className="text-xs">
-            {latestData?.ticker || 'AAPL'}
-          </Badge>
-        </div>
+    <div className="space-y-6">
+      <div className="flex items-center gap-2">
+        <Activity className="h-5 w-5" />
+        <h2 className="text-2xl font-semibold">Technical Analysis - {ticker}</h2>
+      </div>
 
-        {/* Returns Section */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium text-muted-foreground flex items-center space-x-2">
-            <TrendingUp className="h-4 w-4" />
-            <span>Period Returns</span>
-          </h4>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {[
-              { period: '5d', value: latestData?.ret_5d || 0 },
-              { period: '20d', value: latestData?.ret_20d || 0 },
-              { period: '60d', value: latestData?.ret_60d || 0 },
-              { period: '120d', value: latestData?.ret_120d || 0 },
-              { period: '250d', value: latestData?.ret_250d || 0 },
-            ].map(({ period, value }) => (
-              <div key={period} className="bg-secondary/30 rounded-lg p-3 text-center">
-                <div className="text-xs text-muted-foreground mb-1">{period}</div>
-                <div className={`text-sm font-medium ${getReturnColor(value)}`}>
-                  {formatPercentage(value)}
-                </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Returns Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Returns
+            </CardTitle>
+            <CardDescription>Price returns across different periods</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {returnPeriods.map(({ period, value, label }) => (
+              <div key={period} className="flex justify-between items-center">
+                <span className="text-sm font-medium">{label}</span>
+                <Badge 
+                  variant="outline" 
+                  className={`${getReturnColor(value)} border-current`}
+                >
+                  {formatPercent(value)}
+                </Badge>
               </div>
             ))}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        {/* Volatility Section */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium text-muted-foreground flex items-center space-x-2">
-            <Activity className="h-4 w-4" />
-            <span>Volatility</span>
-          </h4>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {[
-              { period: '5d', value: latestData?.vol_5d || 0 },
-              { period: '20d', value: latestData?.vol_20d || 0 },
-              { period: '60d', value: latestData?.vol_60d || 0 },
-              { period: '120d', value: latestData?.vol_120d || 0 },
-              { period: '250d', value: latestData?.vol_250d || 0 },
-            ].map(({ period, value }) => {
-              const volLevel = getVolatilityLevel(value);
-              return (
-                <div key={period} className="bg-secondary/30 rounded-lg p-3">
-                  <div className="text-xs text-muted-foreground mb-1">{period}</div>
-                  <div className="text-sm font-medium text-foreground mb-1">
-                    {formatPercentage(value)}
-                  </div>
-                  <Badge variant="outline" className={`text-xs h-5 text-${volLevel.color}`}>
-                    {volLevel.level}
-                  </Badge>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        {/* Volatility Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              Volatility
+            </CardTitle>
+            <CardDescription>Price volatility across different periods</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {volatilityPeriods.map(({ period, value, label }) => (
+              <div key={period} className="flex justify-between items-center">
+                <span className="text-sm font-medium">{label}</span>
+                <Badge variant="outline">
+                  {formatPercent(value)}
+                </Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-secondary/30 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Drawdown</span>
-              <TrendingDown className="h-4 w-4 text-destructive" />
+        {/* Risk Metrics Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingDown className="h-4 w-4" />
+              Risk Metrics
+            </CardTitle>
+            <CardDescription>Drawdown and momentum indicators</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">Max Drawdown</span>
+              <Badge 
+                variant="outline" 
+                className={`${features.drawdown < -0.1 ? 'text-red-600 border-red-600' : 'text-orange-500 border-orange-500'}`}
+              >
+                {formatPercent(features.drawdown)}
+              </Badge>
             </div>
-            <div className="text-lg font-semibold text-destructive">
-              {formatDrawdown(latestData?.drawdown || 0)}
+            
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">12M Momentum</span>
+              <Badge 
+                variant="outline" 
+                className={`${getReturnColor(features.mom_12m)} border-current`}
+              >
+                {formatPercent(features.mom_12m)}
+              </Badge>
             </div>
-            <Progress 
-              value={Math.abs((latestData?.drawdown || 0) * 100)} 
-              className="mt-2 h-2"
-            />
-          </div>
 
-          <div className="bg-secondary/30 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">12M Momentum</span>
-              <TrendingUp className="h-4 w-4 text-primary" />
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                Day of Week
+              </span>
+              <Badge variant="outline">
+                {getDayName(features.dayofweek)}
+              </Badge>
             </div>
-            <div className={`text-lg font-semibold ${getReturnColor(latestData?.mom_12m || 0)}`}>
-              {formatPercentage(latestData?.mom_12m || 0)}
-            </div>
-          </div>
-
-          <div className="bg-secondary/30 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Day of Week</span>
-              <Activity className="h-4 w-4 text-primary" />
-            </div>
-            <div className="text-lg font-semibold text-foreground">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][latestData?.dayofweek || 0]}
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
-    </Card>
+
+      {/* Feature Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Feature Summary</CardTitle>
+          <CardDescription>Key technical indicators for model input</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm">
+            <div className="text-center">
+              <div className="font-semibold text-lg text-primary">
+                {returnPeriods.filter(r => r.value > 0).length}/5
+              </div>
+              <div className="text-muted-foreground">Positive Returns</div>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-lg text-primary">
+                {formatPercent(Math.max(...volatilityPeriods.map(v => v.value)))}
+              </div>
+              <div className="text-muted-foreground">Max Volatility</div>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-lg text-primary">
+                {formatPercent(features.ret_250d)}
+              </div>
+              <div className="text-muted-foreground">Annual Return</div>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-lg text-primary">
+                {Math.abs(features.drawdown) > 0.2 ? 'High' : Math.abs(features.drawdown) > 0.1 ? 'Medium' : 'Low'}
+              </div>
+              <div className="text-muted-foreground">Risk Level</div>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-lg text-primary">
+                {features.mom_12m > 0 ? 'Bullish' : 'Bearish'}
+              </div>
+              <div className="text-muted-foreground">Momentum</div>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-lg text-primary">
+                {features.dayofweek}
+              </div>
+              <div className="text-muted-foreground">Day Index</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
