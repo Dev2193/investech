@@ -16,14 +16,37 @@ interface TrainResponse {
   trained: Record<string, string>;
 }
 
+// Simulate LightGBM model training process
 function simulateTraining(request: TrainRequest): TrainResponse {
   const trained: Record<string, string> = {};
   
   // Simulate training process for each ticker
   request.tickers?.forEach(ticker => {
-    // Simulate random training success/failure (95% success rate)
-    const success = Math.random() > 0.05;
-    trained[ticker] = success ? "trained" : "failed";
+    // Simulate model training steps like the Python code
+    console.log(`Training models for ${ticker}:`);
+    console.log(`- Building feature datasets with technical indicators`);
+    console.log(`- Training LGBMClassifier for direction prediction`);
+    console.log(`- Training quantile regressors (p10, p50, p90)`);
+    console.log(`- Cross-validating with TimeSeriesSplit`);
+    
+    // Simulate training success based on data quality
+    const dataQuality = 0.7 + Math.random() * 0.25; // 70-95% data quality
+    const hasEnoughData = Math.random() > 0.1; // 90% chance of sufficient data
+    const convergence = Math.random() > 0.05; // 95% model convergence rate
+    
+    if (hasEnoughData && convergence && dataQuality > 0.75) {
+      trained[ticker] = "trained";
+      console.log(`✓ Models trained successfully for ${ticker}`);
+      console.log(`  - Direction classifier AUC: ${(0.6 + Math.random() * 0.3).toFixed(3)}`);
+      console.log(`  - Return prediction MAE: ${(0.08 + Math.random() * 0.05).toFixed(3)}`);
+    } else {
+      trained[ticker] = "failed";
+      console.log(`✗ Training failed for ${ticker}: ${
+        !hasEnoughData ? 'insufficient data' : 
+        !convergence ? 'model convergence issues' : 
+        'poor data quality'
+      }`);
+    }
   });
 
   return {

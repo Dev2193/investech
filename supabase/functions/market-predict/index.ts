@@ -23,23 +23,66 @@ interface PredictResponse {
   confidence: number;
 }
 
-// Mock technical analysis and prediction logic
+// Simulate technical feature calculation
+function calculateTechnicalFeatures(ticker: string, region: string): Record<string, number> {
+  // Simulate returns at different periods (like Python ret_5d, ret_20d, etc.)
+  const ret_5d = (Math.random() - 0.5) * 0.1;
+  const ret_20d = (Math.random() - 0.5) * 0.2;
+  const ret_60d = (Math.random() - 0.5) * 0.3;
+  const ret_120d = (Math.random() - 0.5) * 0.4;
+  const ret_250d = (Math.random() - 0.5) * 0.5;
+  
+  // Simulate volatilities
+  const vol_5d = 0.1 + Math.random() * 0.1;
+  const vol_20d = 0.15 + Math.random() * 0.1;
+  const vol_60d = 0.2 + Math.random() * 0.1;
+  
+  // Simulate other features
+  const drawdown = -Math.random() * 0.3;
+  const mom_12m = (Math.random() - 0.5) * 0.6;
+  const dayofweek = Math.floor(Math.random() * 7);
+  
+  // Simulate sentiment features
+  const sentiment_score = (Math.random() - 0.5) * 2;
+  const news_volume = Math.random() * 100;
+  
+  return {
+    ret_5d, ret_20d, ret_60d, ret_120d, ret_250d,
+    vol_5d, vol_20d, vol_60d,
+    drawdown, mom_12m, dayofweek,
+    sentiment_score, news_volume
+  };
+}
+
+// Simulate LightGBM-style prediction logic
 function generatePrediction(request: PredictRequest): PredictResponse {
-  // Simulate technical analysis calculations
-  const baseReturn = Math.random() * 0.2 - 0.1; // -10% to +10%
-  const volatility = 0.15 + Math.random() * 0.1; // 15% to 25%
-  const regionBoost = request.region === 'IN' ? 1.5 : 1.0;
+  const features = calculateTechnicalFeatures(request.ticker, request.region);
   
-  // Calculate probability of positive return
-  const p_up = Math.max(0.1, Math.min(0.9, 0.5 + (baseReturn * regionBoost) / volatility));
+  // Simulate classifier prediction (direction probability)
+  // Weight recent returns and sentiment more heavily
+  const momentum_signal = features.ret_5d * 0.3 + features.ret_20d * 0.2 + features.sentiment_score * 0.1;
+  const vol_penalty = -(features.vol_5d * 0.15 + features.vol_20d * 0.1);
+  const region_boost = request.region === 'IN' ? 0.05 : 0.0;
   
-  // Generate return distribution
-  const exp_return_p50 = baseReturn * regionBoost;
-  const exp_return_p10 = exp_return_p50 - 1.65 * volatility;
-  const exp_return_p90 = exp_return_p50 + 1.65 * volatility;
+  const raw_p_up = 0.5 + momentum_signal + vol_penalty + region_boost + (Math.random() - 0.5) * 0.1;
+  const p_up = Math.max(0.05, Math.min(0.95, raw_p_up));
   
-  // Calculate confidence based on data quality simulation
-  const confidence = Math.max(0.4, Math.min(0.9, 0.7 + Math.random() * 0.2));
+  // Simulate quantile regression predictions
+  const base_vol = Math.sqrt(features.vol_20d * features.vol_60d);
+  const trend_component = features.ret_20d * 0.5 + features.ret_60d * 0.3;
+  
+  // Median return (50th percentile)
+  const exp_return_p50 = trend_component + (Math.random() - 0.5) * 0.05;
+  
+  // 10th and 90th percentiles with realistic spread
+  const vol_multiplier = Math.max(1.0, base_vol * 10);
+  const exp_return_p10 = exp_return_p50 - 1.28 * vol_multiplier; // ~10th percentile
+  const exp_return_p90 = exp_return_p50 + 1.28 * vol_multiplier; // ~90th percentile
+  
+  // Confidence based on feature stability and data quality
+  const feature_stability = 1 - Math.abs(features.vol_5d - features.vol_20d) / features.vol_20d;
+  const data_quality = 0.8 + Math.random() * 0.15; // Simulate data availability
+  const confidence = Math.max(0.3, Math.min(0.9, feature_stability * 0.4 + data_quality * 0.6));
   
   return {
     ticker: request.ticker,
