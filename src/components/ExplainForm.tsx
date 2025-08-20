@@ -65,10 +65,10 @@ export default function ExplainForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            Model Explanation
+            Model Explanation (Language Brain)
           </CardTitle>
           <CardDescription>
-            Get detailed explanations of model predictions with SHAP feature importance and relevant news articles
+            LLM-written explanations with RAG citations and SHAP feature importance analysis
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -81,10 +81,10 @@ export default function TrainForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Settings2 className="h-5 w-5" />
-            Model Training
+            Model Training Pipeline
           </CardTitle>
           <CardDescription>
-            Train machine learning models for specific tickers using historical price and sentiment data
+            Train LightGBM classifiers and quantile regressors using regional data with sentiment integration
           </CardDescription>
         </CardHeader>
         <CardContent>

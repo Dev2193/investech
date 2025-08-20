@@ -174,10 +174,10 @@ export function DocumentSearch() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Search className="h-5 w-5" />
-            Semantic Document Search
+            Semantic Document Search (RAG)
           </CardTitle>
           <CardDescription>
-            Search financial news using AI-powered semantic similarity (FAISS + Sentence Transformers)
+            Vector-based news retrieval with sentence transformers for contextual explanations
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

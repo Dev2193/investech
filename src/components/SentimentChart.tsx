@@ -127,10 +127,10 @@ export function SentimentChart() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
-            Live Sentiment Analysis
+            NLP Pipeline (Language Brain)
           </CardTitle>
           <CardDescription>
-            Test FinBERT sentiment analysis on financial text
+            FinBERT sentiment analysis with India-region boosting for enhanced local market signals
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

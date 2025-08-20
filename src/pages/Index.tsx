@@ -17,36 +17,36 @@ const Index = () => {
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <MetricCard
-            title="Overall Sentiment"
-            value="68.4%"
-            change="+2.3%"
-            changeType="positive"
-            icon={<TrendingUp className="h-6 w-6" />}
-            description="Weighted sentiment score"
-          />
-          <MetricCard
-            title="Prediction Accuracy"
+            title="Quant Brain Accuracy"
             value="74.2%"
             change="+1.8%"
             changeType="positive"
             icon={<Target className="h-6 w-6" />}
-            description="7-day rolling accuracy"
+            description="LightGBM classifier performance"
           />
           <MetricCard
-            title="Active Signals"
-            value="1,247"
-            change="+156"
+            title="Language Brain Score"
+            value="68.4%"
+            change="+2.3%"
+            changeType="positive"
+            icon={<TrendingUp className="h-6 w-6" />}
+            description="Weighted sentiment analysis"
+          />
+          <MetricCard
+            title="India Region Boost"
+            value="1.5x"
+            change="Active"
             changeType="positive"
             icon={<Activity className="h-6 w-6" />}
-            description="Daily text signals processed"
+            description="IN-origin source weighting"
           />
           <MetricCard
-            title="Model Confidence"
+            title="SHAP Confidence"
             value="82.1%"
             change="-0.5%"
             changeType="negative"
             icon={<Brain className="h-6 w-6" />}
-            description="Average prediction confidence"
+            description="Feature importance clarity"
           />
         </div>
         

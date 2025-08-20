@@ -69,10 +69,10 @@ export default function PredictForm() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
-            Market Prediction
+            Market Prediction (Quant Brain)
           </CardTitle>
           <CardDescription>
-            Generate ML-powered forecasts for stock tickers using technical and sentiment analysis
+            LightGBM-powered forecasting with quantile regression for return distribution modeling
           </CardDescription>
         </CardHeader>
         <CardContent>
