@@ -4,6 +4,7 @@ import { SentimentChart } from "@/components/SentimentChart";
 import { PredictionResults } from "@/components/PredictionResults";
 import { FeatureImportance } from "@/components/FeatureImportance";
 import { TechnicalAnalysis } from "@/components/TechnicalAnalysis";
+import { DocumentSearch } from "@/components/DocumentSearch";
 import { AIChat } from "@/components/AIChat";
 import { TrendingUp, TrendingDown, Activity, Users, Brain, Target } from "lucide-react";
 
@@ -54,6 +55,7 @@ const Index = () => {
           {/* Left Column - Charts */}
           <div className="lg:col-span-2 space-y-6">
             <SentimentChart />
+            <DocumentSearch />
             <TechnicalAnalysis />
             <FeatureImportance />
           </div>
