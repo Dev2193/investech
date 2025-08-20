@@ -7,6 +7,12 @@ import TrainForm from './TrainForm';
 import Index from '@/pages/Index';
 
 export default function Navigation() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+
+  const handleNavigate = (section: string) => {
+    setActiveTab(section);
+  };
+  
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8">
@@ -19,7 +25,7 @@ export default function Navigation() {
           </p>
         </div>
 
-        <Tabs defaultValue="dashboard" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
@@ -40,7 +46,7 @@ export default function Navigation() {
           </TabsList>
 
           <TabsContent value="dashboard">
-            <Index />
+            <Index onNavigate={handleNavigate} />
           </TabsContent>
 
           <TabsContent value="predict">

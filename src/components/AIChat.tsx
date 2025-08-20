@@ -5,11 +5,15 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { MessageCircle, Send, Bot, User, Key, Zap } from "lucide-react";
+import { MessageCircle, Send, Bot, User, Key, Zap, TrendingUp, Brain, Target } from "lucide-react";
 import { OpenAIService, ChatMessage } from '@/services/openai';
 import { useToast } from '@/hooks/use-toast';
 
-export function AIChat() {
+interface AIChatProps {
+  onNavigate?: (section: string) => void;
+}
+
+export function AIChat({ onNavigate }: AIChatProps = {}) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +44,7 @@ export function AIChat() {
     // Add welcome message
     const welcomeMessage: ChatMessage = {
       role: 'assistant',
-      content: 'Hello! I\'m your AI financial analyst. I can help you analyze sentiment data, interpret model predictions, and provide insights on market trends. What would you like to explore?',
+      content: 'Hello! I\'m your AI financial analyst. I can help you analyze sentiment data, interpret model predictions, and provide insights on market trends. Use the buttons below to navigate to different sections, or ask me anything about financial markets!',
       timestamp: Date.now()
     };
     setMessages([welcomeMessage]);
@@ -115,19 +119,52 @@ export function AIChat() {
               For security, consider connecting to Supabase to store your API key safely. 
               For now, enter your OpenAI API key below (stored in browser session only).
             </p>
-            <div className="flex space-x-2">
-              <Input
-                type="password"
-                placeholder="sk-..."
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="flex-1"
-              />
-              <Button onClick={handleApiKeySubmit} className="bg-primary hover:bg-primary/90">
-                <Zap className="h-4 w-4 mr-2" />
-                Connect
-              </Button>
+            <div className="space-y-3">
+              <div className="flex space-x-2">
+                <Input
+                  type="password"
+                  placeholder="sk-..."
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="flex-1"
+                />
+                <Button onClick={handleApiKeySubmit} className="bg-primary hover:bg-primary/90">
+                  <Zap className="h-4 w-4 mr-2" />
+                  Connect
+                </Button>
+              </div>
+              
+              {/* Quick Actions */}
+              <div className="flex flex-wrap gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => onNavigate?.('predict')}
+                  className="text-xs"
+                >
+                  <TrendingUp className="h-3 w-3 mr-1" />
+                  Predict
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => onNavigate?.('explain')}
+                  className="text-xs"
+                >
+                  <Brain className="h-3 w-3 mr-1" />
+                  Explain
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => onNavigate?.('train')}
+                  className="text-xs"
+                >
+                  <Target className="h-3 w-3 mr-1" />
+                  Train
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -222,22 +259,55 @@ export function AIChat() {
       <Separator />
       
       <div className="p-4">
-        <div className="flex space-x-2">
-          <Input
-            placeholder="Ask about sentiment analysis, predictions, or market insights..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            disabled={isLoading}
-            className="flex-1"
-          />
-          <Button 
-            onClick={sendMessage} 
-            disabled={isLoading || !input.trim()}
-            className="bg-primary hover:bg-primary/90"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
+        <div className="space-y-3">
+          <div className="flex space-x-2">
+            <Input
+              placeholder="Ask about sentiment analysis, predictions, or market insights..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              disabled={isLoading}
+              className="flex-1"
+            />
+            <Button 
+              onClick={sendMessage} 
+              disabled={isLoading || !input.trim()}
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          {/* Quick Actions */}
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => onNavigate?.('predict')}
+              className="text-xs"
+            >
+              <TrendingUp className="h-3 w-3 mr-1" />
+              Predict
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => onNavigate?.('explain')}
+              className="text-xs"
+            >
+              <Brain className="h-3 w-3 mr-1" />
+              Explain
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => onNavigate?.('train')}
+              className="text-xs"
+            >
+              <Target className="h-3 w-3 mr-1" />
+              Train
+            </Button>
+          </div>
         </div>
       </div>
     </Card>

@@ -5,14 +5,23 @@ import { PredictionResults } from "@/components/PredictionResults";
 import { FeatureImportance } from "@/components/FeatureImportance";
 import { TechnicalAnalysis } from "@/components/TechnicalAnalysis";
 import { DocumentSearch } from "@/components/DocumentSearch";
-import { TechnicalRequirements } from "@/components/TechnicalRequirements";
+
 import { AIChat } from "@/components/AIChat";
 import { TrendingUp, TrendingDown, Activity, Users, Brain, Target } from "lucide-react";
 
-const Index = () => {
+interface IndexProps {
+  onNavigate?: (section: string) => void;
+}
+
+const Index = ({ onNavigate }: IndexProps) => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6 space-y-6">
+        {/* AI Assistant - Top Section */}
+        <div className="mb-8">
+          <AIChat onNavigate={onNavigate} />
+        </div>
+        
         <DashboardHeader />
         
         {/* Key Metrics */}
@@ -61,16 +70,10 @@ const Index = () => {
             <FeatureImportance />
           </div>
           
-          {/* Right Column - Predictions and AI Chat */}
+          {/* Right Column - Predictions */}
           <div className="space-y-6">
             <PredictionResults />
-            <AIChat />
           </div>
-        </div>
-        
-        {/* Technical Requirements Section */}
-        <div className="mt-12">
-          <TechnicalRequirements />
         </div>
       </div>
     </div>
