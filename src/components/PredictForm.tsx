@@ -14,8 +14,8 @@ import type { PredictRequest, PredictResponse } from '@/types/api';
 export default function PredictForm() {
   const [formData, setFormData] = useState<PredictRequest>({
     ticker: '',
-    horizon_days: 30,
-    region: 'IN'
+    region: 'IN',
+    horizon_days: 365
   });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PredictResponse | null>(null);
@@ -55,6 +55,14 @@ export default function PredictForm() {
     return `${(value * 100).toFixed(1)}%`;
   };
 
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short', 
+      day: 'numeric'
+    });
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -79,9 +87,9 @@ export default function PredictForm() {
                   onChange={(e) => setFormData({ ...formData, ticker: e.target.value.toUpperCase() })}
                 />
               </div>
-              <div>
+                <div>
                 <Label htmlFor="horizon">Horizon (Days)</Label>
-                <Select value={formData.horizon_days.toString()} onValueChange={(value) => setFormData({ ...formData, horizon_days: parseInt(value) })}>
+                <Select value={(formData.horizon_days || 365).toString()} onValueChange={(value) => setFormData({ ...formData, horizon_days: parseInt(value) })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -90,12 +98,14 @@ export default function PredictForm() {
                     <SelectItem value="7">1 Week</SelectItem>
                     <SelectItem value="30">1 Month</SelectItem>
                     <SelectItem value="90">3 Months</SelectItem>
+                    <SelectItem value="180">6 Months</SelectItem>
+                    <SelectItem value="365">1 Year</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label htmlFor="region">Region</Label>
-                <Select value={formData.region} onValueChange={(value) => setFormData({ ...formData, region: value })}>
+                <Select value={formData.region || 'IN'} onValueChange={(value) => setFormData({ ...formData, region: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -122,7 +132,7 @@ export default function PredictForm() {
               Prediction Results for {result.ticker}
             </CardTitle>
             <CardDescription>
-              As of {result.as_of} • {result.horizon_days} day horizon
+              As of {formatDate(result.as_of)} • {result.horizon_days} day horizon
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">

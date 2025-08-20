@@ -85,7 +85,7 @@ export default function ExplainForm() {
               </div>
               <div>
                 <Label htmlFor="region">Region</Label>
-                <Select value={formData.region} onValueChange={(value) => setFormData({ ...formData, region: value })}>
+                <Select value={formData.region || 'IN'} onValueChange={(value) => setFormData({ ...formData, region: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -98,7 +98,7 @@ export default function ExplainForm() {
               </div>
               <div>
                 <Label htmlFor="lookback">Lookback Days</Label>
-                <Select value={formData.lookback_days.toString()} onValueChange={(value) => setFormData({ ...formData, lookback_days: parseInt(value) })}>
+                <Select value={(formData.lookback_days || 120).toString()} onValueChange={(value) => setFormData({ ...formData, lookback_days: parseInt(value) })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -107,6 +107,7 @@ export default function ExplainForm() {
                     <SelectItem value="60">60 Days</SelectItem>
                     <SelectItem value="120">120 Days</SelectItem>
                     <SelectItem value="180">180 Days</SelectItem>
+                    <SelectItem value="365">1 Year</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

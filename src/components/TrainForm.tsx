@@ -90,18 +90,38 @@ export default function TrainForm() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="region">Training Region</Label>
-                <Select value={formData.region} onValueChange={(value) => setFormData({ ...formData, region: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="IN">India</SelectItem>
-                    <SelectItem value="US">United States</SelectItem>
-                    <SelectItem value="EU">Europe</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="region">Training Region</Label>
+                  <Select value={formData.region || 'IN'} onValueChange={(value) => setFormData({ ...formData, region: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="IN">India</SelectItem>
+                      <SelectItem value="US">United States</SelectItem>
+                      <SelectItem value="EU">Europe</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="start">Start Date (Optional)</Label>
+                  <Input
+                    id="start"
+                    type="date"
+                    value={formData.start || ''}
+                    onChange={(e) => setFormData({ ...formData, start: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="end">End Date (Optional)</Label>
+                  <Input
+                    id="end"
+                    type="date"
+                    value={formData.end || ''}
+                    onChange={(e) => setFormData({ ...formData, end: e.target.value })}
+                  />
+                </div>
               </div>
 
               <div className="space-y-3">

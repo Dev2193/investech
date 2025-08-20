@@ -7,8 +7,10 @@ const corsHeaders = {
 };
 
 interface TrainRequest {
-  tickers?: string[];
-  region: string;
+  tickers?: string[]; // defaults to empty array
+  region?: string; // defaults to "IN"
+  start?: string; // ISO date string
+  end?: string; // ISO date string
 }
 
 interface TrainResponse {
@@ -18,16 +20,24 @@ interface TrainResponse {
 
 // Simulate LightGBM model training process
 function simulateTraining(request: TrainRequest): TrainResponse {
+  // Apply Pydantic schema defaults
+  const tickers = request.tickers || [];
+  const region = request.region || "IN";
+  const start = request.start;
+  const end = request.end;
+  
   const trained: Record<string, string> = {};
   
   // Simulate training process for each ticker
-  request.tickers?.forEach(ticker => {
+  tickers.forEach(ticker => {
     // Simulate model training steps like the Python code
-    console.log(`Training models for ${ticker}:`);
+    console.log(`Training models for ${ticker} in region ${region}:`);
     console.log(`- Building feature datasets with technical indicators`);
     console.log(`- Training LGBMClassifier for direction prediction`);
     console.log(`- Training quantile regressors (p10, p50, p90)`);
     console.log(`- Cross-validating with TimeSeriesSplit`);
+    if (start) console.log(`- Training period starts: ${start}`);
+    if (end) console.log(`- Training period ends: ${end}`);
     
     // Simulate training success based on data quality
     const dataQuality = 0.7 + Math.random() * 0.25; // 70-95% data quality
@@ -63,14 +73,11 @@ serve(async (req) => {
   try {
     const request: TrainRequest = await req.json();
     
-    if (!request.region) {
-      return new Response(
-        JSON.stringify({ error: 'Missing required field: region' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (!request.tickers || request.tickers.length === 0) {
+    // Apply defaults
+    const region = request.region || "IN";
+    const tickers = request.tickers || [];
+    
+    if (tickers.length === 0) {
       return new Response(
         JSON.stringify({ error: 'At least one ticker is required for training' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -78,7 +85,7 @@ serve(async (req) => {
     }
 
     // Simulate training delay based on number of tickers
-    const trainingDelay = Math.min(5000, request.tickers.length * 1000);
+    const trainingDelay = Math.min(5000, tickers.length * 1000);
     await new Promise(resolve => setTimeout(resolve, trainingDelay));
 
     const result = simulateTraining(request);

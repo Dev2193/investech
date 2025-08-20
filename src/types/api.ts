@@ -1,14 +1,15 @@
-// API request/response types matching Python FastAPI schemas
+// API request/response types matching Python Pydantic schemas
 
 export interface PredictRequest {
   ticker: string;
-  horizon_days: number;
-  region: string;
+  region?: string; // defaults to "IN"
+  horizon_days?: number; // defaults to 365
+  as_of?: string; // ISO date string
 }
 
 export interface PredictResponse {
   ticker: string;
-  as_of: string;
+  as_of: string; // ISO date string
   horizon_days: number;
   p_up: number;
   exp_return_p50: number;
@@ -19,9 +20,9 @@ export interface PredictResponse {
 
 export interface ExplainRequest {
   ticker: string;
-  region: string;
-  as_of?: string;
-  lookback_days: number;
+  region?: string; // defaults to "IN"
+  lookback_days?: number; // defaults to 120
+  as_of?: string; // ISO date string
 }
 
 export interface Article {
@@ -34,20 +35,18 @@ export interface Article {
 
 export interface ExplainResponse {
   ticker: string;
-  as_of: string;
+  as_of: string; // ISO date string
   region: string;
   summary: string;
-  articles: Article[];
-  shap_top: Array<{
-    feature: string;
-    importance: number;
-    impact: 'positive' | 'negative';
-  }>;
+  articles: Record<string, any>[];
+  shap_top: Record<string, any>[];
 }
 
 export interface TrainRequest {
-  tickers?: string[];
-  region: string;
+  tickers?: string[]; // defaults to empty array
+  region?: string; // defaults to "IN"
+  start?: string; // ISO date string
+  end?: string; // ISO date string
 }
 
 export interface TrainResponse {

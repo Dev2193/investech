@@ -8,13 +8,14 @@ const corsHeaders = {
 
 interface PredictRequest {
   ticker: string;
-  horizon_days: number;
-  region: string;
+  region?: string; // defaults to "IN"
+  horizon_days?: number; // defaults to 365
+  as_of?: string; // ISO date string
 }
 
 interface PredictResponse {
   ticker: string;
-  as_of: string;
+  as_of: string; // ISO date string
   horizon_days: number;
   p_up: number;
   exp_return_p50: number;
@@ -56,13 +57,18 @@ function calculateTechnicalFeatures(ticker: string, region: string): Record<stri
 
 // Simulate LightGBM-style prediction logic
 function generatePrediction(request: PredictRequest): PredictResponse {
-  const features = calculateTechnicalFeatures(request.ticker, request.region);
+  // Apply Pydantic schema defaults
+  const region = request.region || "IN";
+  const horizonDays = request.horizon_days || 365;
+  const asOf = request.as_of || new Date().toISOString().split('T')[0];
+  
+  const features = calculateTechnicalFeatures(request.ticker, region);
   
   // Simulate classifier prediction (direction probability)
   // Weight recent returns and sentiment more heavily
   const momentum_signal = features.ret_5d * 0.3 + features.ret_20d * 0.2 + features.sentiment_score * 0.1;
   const vol_penalty = -(features.vol_5d * 0.15 + features.vol_20d * 0.1);
-  const region_boost = request.region === 'IN' ? 0.05 : 0.0;
+  const region_boost = region === 'IN' ? 0.05 : 0.0;
   
   const raw_p_up = 0.5 + momentum_signal + vol_penalty + region_boost + (Math.random() - 0.5) * 0.1;
   const p_up = Math.max(0.05, Math.min(0.95, raw_p_up));
@@ -86,8 +92,8 @@ function generatePrediction(request: PredictRequest): PredictResponse {
   
   return {
     ticker: request.ticker,
-    as_of: new Date().toISOString().split('T')[0],
-    horizon_days: request.horizon_days,
+    as_of: asOf,
+    horizon_days: horizonDays,
     p_up: Math.round(p_up * 1000) / 1000,
     exp_return_p50: Math.round(exp_return_p50 * 1000) / 1000,
     exp_return_p10: Math.round(exp_return_p10 * 1000) / 1000,
@@ -106,9 +112,9 @@ serve(async (req) => {
     const request: PredictRequest = await req.json();
     
     // Validate input
-    if (!request.ticker || !request.horizon_days || !request.region) {
+    if (!request.ticker) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields: ticker, horizon_days, region' }),
+        JSON.stringify({ error: 'Missing required field: ticker' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

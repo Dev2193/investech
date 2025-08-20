@@ -46,13 +46,18 @@ export class MarketAPI {
 
   // Mock implementation for development
   async predictMock(request: PredictRequest): Promise<PredictResponse> {
+    // Apply defaults matching Pydantic schema
+    const region = request.region || "IN";
+    const horizonDays = request.horizon_days || 365;
+    const asOf = request.as_of || new Date().toISOString().split('T')[0];
+    
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     return {
       ticker: request.ticker,
-      as_of: new Date().toISOString().split('T')[0],
-      horizon_days: request.horizon_days,
+      as_of: asOf,
+      horizon_days: horizonDays,
       p_up: 0.65,
       exp_return_p50: 0.08,
       exp_return_p10: -0.05,
@@ -62,6 +67,11 @@ export class MarketAPI {
   }
 
   async explainMock(request: ExplainRequest): Promise<ExplainResponse> {
+    // Apply defaults matching Pydantic schema
+    const region = request.region || "IN";
+    const lookbackDays = request.lookback_days || 120;
+    const asOf = request.as_of || new Date().toISOString().split('T')[0];
+    
     await new Promise(resolve => setTimeout(resolve, 1200));
     
     // Mock news data for sentiment analysis
@@ -69,40 +79,40 @@ export class MarketAPI {
       {
         ticker: request.ticker,
         published_at: '2024-01-20T10:30:00Z',
-        region: request.region,
+        region: region,
         text: `${request.ticker} reports strong quarterly results with significant growth in digital services and retail expansion.`
       },
       {
         ticker: request.ticker,
         published_at: '2024-01-19T14:15:00Z',
-        region: request.region,
+        region: region,
         text: `Market concerns about increased competition in the sector affecting ${request.ticker} growth prospects.`
       },
       {
         ticker: request.ticker,
         published_at: '2024-01-18T09:45:00Z',
-        region: request.region,
+        region: region,
         text: `${request.ticker} announces new strategic initiatives expected to boost revenue by 15% next quarter.`
       }
     ];
 
     try {
       // Use real sentiment analysis
-      const sentimentSignals = await aggregateDailySignals(mockNewsData, request.region === 'IN' ? 1.5 : 1.0);
+      const sentimentSignals = await aggregateDailySignals(mockNewsData, region === 'IN' ? 1.5 : 1.0);
       const avgSentiment = sentimentSignals.length > 0 
         ? sentimentSignals.reduce((sum, s) => sum + s.sent_mean, 0) / sentimentSignals.length 
         : 0;
 
-      const summary = `Model forecast explanation for ${request.ticker} (region ${request.region}). ` +
+      const summary = `Model forecast explanation for ${request.ticker} (region ${region}). ` +
         `Sentiment analysis shows ${avgSentiment > 0 ? 'positive' : avgSentiment < 0 ? 'negative' : 'neutral'} market sentiment ` +
         `with average score of ${(avgSentiment * 100).toFixed(1)}%. Recent technical indicators show momentum patterns ` +
-        `based on ${sentimentSignals.length} daily signal aggregates. Key drivers include earnings expectations, ` +
-        `sector rotation patterns, and regional market dynamics specific to ${request.region}.`;
+        `based on ${sentimentSignals.length} daily signal aggregates over ${lookbackDays} day lookback period. ` +
+        `Key drivers include earnings expectations, sector rotation patterns, and regional market dynamics specific to ${region}.`;
 
       return {
         ticker: request.ticker,
-        as_of: request.as_of || new Date().toISOString().split('T')[0],
-        region: request.region,
+        as_of: asOf,
+        region: region,
         summary,
         articles: mockNewsData.map(article => ({
           url: "https://example.com/news",
@@ -123,9 +133,9 @@ export class MarketAPI {
       // Fallback to original mock response
       return {
         ticker: request.ticker,
-        as_of: request.as_of || new Date().toISOString().split('T')[0],
-        region: request.region,
-        summary: `Model forecast explanation for ${request.ticker} (region ${request.region}). Technical analysis indicates mixed signals with moderate confidence levels.`,
+        as_of: asOf,
+        region: region,
+        summary: `Model forecast explanation for ${request.ticker} (region ${region}). Technical analysis indicates mixed signals with moderate confidence levels over ${lookbackDays} day period.`,
         articles: mockNewsData.map(article => ({
           url: "https://example.com/news",
           date: article.published_at.split('T')[0],
@@ -144,12 +154,20 @@ export class MarketAPI {
   }
 
   async trainMock(request: TrainRequest): Promise<TrainResponse> {
+    // Apply defaults matching Pydantic schema
+    const tickers = request.tickers || [];
+    const region = request.region || "IN";
+    const start = request.start;
+    const end = request.end;
+    
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     const trained: Record<string, string> = {};
-    request.tickers?.forEach(ticker => {
+    tickers.forEach(ticker => {
       trained[ticker] = "trained";
     });
+
+    console.log(`Training completed for region ${region}${start ? ` from ${start}` : ''}${end ? ` to ${end}` : ''}`);
 
     return {
       status: "ok",
