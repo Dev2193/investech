@@ -110,7 +110,7 @@ export function AIChat({ onNavigate }: AIChatProps = {}) {
             </div>
           </div>
 
-          <div className="bg-warning/10 border border-warning/20 rounded-lg p-4">
+          <div className="bg-warning/10 border border-warning/20 rounded-lg p-4 mb-4">
             <div className="flex items-center space-x-2 mb-2">
               <Key className="h-4 w-4 text-warning" />
               <span className="text-sm font-medium text-warning-foreground">API Key Required</span>
@@ -119,52 +119,65 @@ export function AIChat({ onNavigate }: AIChatProps = {}) {
               For security, consider connecting to Supabase to store your API key safely. 
               For now, enter your OpenAI API key below (stored in browser session only).
             </p>
-            <div className="space-y-3">
-              <div className="flex space-x-2">
-                <Input
-                  type="password"
-                  placeholder="sk-..."
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="flex-1"
-                />
-                <Button onClick={handleApiKeySubmit} className="bg-primary hover:bg-primary/90">
-                  <Zap className="h-4 w-4 mr-2" />
-                  Connect
-                </Button>
-              </div>
-              
-              {/* Quick Actions */}
-              <div className="flex flex-wrap gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => onNavigate?.('predict')}
-                  className="text-xs"
-                >
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  Predict
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => onNavigate?.('explain')}
-                  className="text-xs"
-                >
-                  <Brain className="h-3 w-3 mr-1" />
-                  Explain
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => onNavigate?.('train')}
-                  className="text-xs"
-                >
-                  <Target className="h-3 w-3 mr-1" />
-                  Train
-                </Button>
-              </div>
+          </div>
+
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+            <div className="flex items-center space-x-2 mb-2">
+              <MessageCircle className="h-4 w-4 text-destructive" />
+              <span className="text-sm font-medium text-destructive-foreground">Educational Disclaimer</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              <strong>IMPORTANT:</strong> This AI assistant is for educational and informational purposes only. 
+              All financial advice, predictions, and analysis should not be considered as professional investment advice. 
+              Always consult with qualified financial advisors before making investment decisions. Past performance does not guarantee future results.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex space-x-2">
+              <Input
+                type="password"
+                placeholder="sk-..."
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="flex-1"
+              />
+              <Button onClick={handleApiKeySubmit} className="bg-primary hover:bg-primary/90">
+                <Zap className="h-4 w-4 mr-2" />
+                Connect
+              </Button>
+            </div>
+            
+            {/* Quick Actions */}
+            <div className="flex flex-wrap gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => onNavigate?.('predict')}
+                className="text-xs"
+              >
+                <TrendingUp className="h-3 w-3 mr-1" />
+                Predict
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => onNavigate?.('explain')}
+                className="text-xs"
+              >
+                <Brain className="h-3 w-3 mr-1" />
+                Explain
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => onNavigate?.('train')}
+                className="text-xs"
+              >
+                <Target className="h-3 w-3 mr-1" />
+                Train
+              </Button>
             </div>
           </div>
         </div>
