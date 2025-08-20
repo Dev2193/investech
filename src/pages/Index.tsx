@@ -3,6 +3,7 @@ import { MetricCard } from "@/components/MetricCard";
 import { SentimentChart } from "@/components/SentimentChart";
 import { PredictionResults } from "@/components/PredictionResults";
 import { FeatureImportance } from "@/components/FeatureImportance";
+import { AIChat } from "@/components/AIChat";
 import { TrendingUp, TrendingDown, Activity, Users, Brain, Target } from "lucide-react";
 
 const Index = () => {
@@ -47,15 +48,19 @@ const Index = () => {
           />
         </div>
         
-        {/* Charts and Analysis */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <SentimentChart />
-          <PredictionResults />
-        </div>
-        
-        {/* Feature Importance */}
-        <div className="grid grid-cols-1 gap-6">
-          <FeatureImportance />
+        {/* Main Dashboard Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Charts */}
+          <div className="lg:col-span-2 space-y-6">
+            <SentimentChart />
+            <FeatureImportance />
+          </div>
+          
+          {/* Right Column - Predictions and AI Chat */}
+          <div className="space-y-6">
+            <PredictionResults />
+            <AIChat />
+          </div>
         </div>
       </div>
     </div>
