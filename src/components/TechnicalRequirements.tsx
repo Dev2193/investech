@@ -139,7 +139,7 @@ export function TechnicalRequirements() {
                 </Button>
               </CardTitle>
               <CardDescription>
-                Backend dependencies for the LLM Market Forecaster system
+                Backend dependencies for the InvesTech.AI system
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -208,7 +208,7 @@ export function TechnicalRequirements() {
                 Installation Guide
               </CardTitle>
               <CardDescription>
-                Step-by-step setup for the LLM Market Forecaster system
+                Step-by-step setup for the InvesTech.AI system
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">

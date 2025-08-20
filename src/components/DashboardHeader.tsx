@@ -18,7 +18,7 @@ export function DashboardHeader() {
                   <span>Region-Aware Forecasting System</span>
                 </div>
                 <h1 className="text-4xl font-bold tracking-tight">
-                  LLM Market Forecaster
+                  InvesTech.AI
                 </h1>
                 <p className="text-xl text-muted-foreground leading-relaxed">
                   Advanced stock forecasting with dual-brain architecture: 

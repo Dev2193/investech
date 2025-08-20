@@ -12,7 +12,7 @@ export default function Navigation() {
       <div className="container mx-auto py-8">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight mb-2">
-            LLM Market Forecaster
+            InvesTech.AI
           </h1>
           <p className="text-xl text-muted-foreground">
             AI-powered financial sentiment analysis and market prediction
