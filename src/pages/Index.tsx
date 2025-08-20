@@ -5,6 +5,7 @@ import { PredictionResults } from "@/components/PredictionResults";
 import { FeatureImportance } from "@/components/FeatureImportance";
 import { TechnicalAnalysis } from "@/components/TechnicalAnalysis";
 import { DocumentSearch } from "@/components/DocumentSearch";
+import { TechnicalRequirements } from "@/components/TechnicalRequirements";
 import { AIChat } from "@/components/AIChat";
 import { TrendingUp, TrendingDown, Activity, Users, Brain, Target } from "lucide-react";
 
@@ -65,6 +66,11 @@ const Index = () => {
             <PredictionResults />
             <AIChat />
           </div>
+        </div>
+        
+        {/* Technical Requirements Section */}
+        <div className="mt-12">
+          <TechnicalRequirements />
         </div>
       </div>
     </div>
