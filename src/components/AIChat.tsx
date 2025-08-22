@@ -39,6 +39,26 @@ export function AIChat({ onNavigate }: AIChatProps = {}) {
       });
       return;
     }
+    
+    // Validate API key format
+    if (!apiKey.startsWith('sk-')) {
+      toast({
+        title: "Invalid API Key",
+        description: "OpenAI API keys should start with 'sk-'",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Log first 10 characters for confirmation (similar to Python example)
+    console.log('API Key loaded:', apiKey.substring(0, 10) + '...');
+    
+    toast({
+      title: "API Key Loaded",
+      description: `Key confirmed: ${apiKey.substring(0, 10)}...`,
+      variant: "default"
+    });
+    
     setShowApiKeyInput(false);
     
     // Add welcome message
