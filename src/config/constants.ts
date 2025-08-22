@@ -7,8 +7,8 @@ export const CONFIG = {
   USE_LLMS_FOR_EVENTS: true,
   
   // API Configuration
-  OPENAI_MODEL: "gpt-5-2025-08-07",
-  MAX_COMPLETION_TOKENS: 1000,
+  OPENAI_MODEL: "gpt-4.1-2025-04-14",
+  MAX_COMPLETION_TOKENS: 2000,
 } as const;
 
 export const SYSTEM_PROMPT = `You are a financial AI assistant specializing in text analytics and market sentiment analysis. You have access to:
