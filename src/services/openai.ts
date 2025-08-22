@@ -30,8 +30,7 @@ export class OpenAIService {
               content: msg.content
             }))
           ],
-          max_tokens: CONFIG.MAX_TOKENS,
-          temperature: CONFIG.TEMPERATURE,
+          max_completion_tokens: CONFIG.MAX_COMPLETION_TOKENS,
         }),
       });
 

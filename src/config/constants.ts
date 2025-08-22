@@ -8,8 +8,7 @@ export const CONFIG = {
   
   // API Configuration
   OPENAI_MODEL: "gpt-5-2025-08-07",
-  MAX_TOKENS: 1000,
-  TEMPERATURE: 0.7,
+  MAX_COMPLETION_TOKENS: 1000,
 } as const;
 
 export const SYSTEM_PROMPT = `You are a financial AI assistant specializing in text analytics and market sentiment analysis. You have access to:
