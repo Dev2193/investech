@@ -5,15 +5,12 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { MessageCircle, Send, Bot, User, Key, Zap, TrendingUp, Brain, Target } from "lucide-react";
+import { MessageCircle, Send, Bot, User, Key, Zap } from "lucide-react";
 import { OpenAIService, ChatMessage } from '@/services/openai';
 import { useToast } from '@/hooks/use-toast';
+import { CONFIG } from '@/config/constants';
 
-interface AIChatProps {
-  onNavigate?: (section: string) => void;
-}
-
-export function AIChat({ onNavigate }: AIChatProps = {}) {
+export function AIChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +61,7 @@ export function AIChat({ onNavigate }: AIChatProps = {}) {
     // Add welcome message
     const welcomeMessage: ChatMessage = {
       role: 'assistant',
-      content: 'Hello! I\'m your AI financial analyst. I can help you analyze sentiment data, interpret model predictions, and provide insights on market trends. Use the buttons below to navigate to different sections, or ask me anything about financial markets!',
+      content: 'Hello! I\'m your AI financial analyst. Ask me anything about companies, sectors or financial markets. For a data-backed report on a specific stock, use the Research page.',
       timestamp: Date.now()
     };
     setMessages([welcomeMessage]);
@@ -168,37 +165,6 @@ export function AIChat({ onNavigate }: AIChatProps = {}) {
                 Connect
               </Button>
             </div>
-            
-            {/* Quick Actions */}
-            <div className="flex flex-wrap gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => onNavigate?.('predict')}
-                className="text-xs"
-              >
-                <TrendingUp className="h-3 w-3 mr-1" />
-                Predict
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => onNavigate?.('explain')}
-                className="text-xs"
-              >
-                <Brain className="h-3 w-3 mr-1" />
-                Explain
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => onNavigate?.('train')}
-                className="text-xs"
-              >
-                <Target className="h-3 w-3 mr-1" />
-                Train
-              </Button>
-            </div>
           </div>
         </div>
       </Card>
@@ -220,7 +186,7 @@ export function AIChat({ onNavigate }: AIChatProps = {}) {
                 Online
               </Badge>
               <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 text-xs">
-                GPT-5
+                {CONFIG.OPENAI_MODEL}
               </Badge>
             </div>
           </div>
@@ -295,7 +261,7 @@ export function AIChat({ onNavigate }: AIChatProps = {}) {
         <div className="space-y-3">
           <div className="flex space-x-2">
             <Input
-              placeholder="Ask about sentiment analysis, predictions, or market insights..."
+              placeholder="Ask about a company, sector, or market trend..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -308,37 +274,6 @@ export function AIChat({ onNavigate }: AIChatProps = {}) {
               className="bg-primary hover:bg-primary/90"
             >
               <Send className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          {/* Quick Actions */}
-          <div className="flex flex-wrap gap-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => onNavigate?.('predict')}
-              className="text-xs"
-            >
-              <TrendingUp className="h-3 w-3 mr-1" />
-              Predict
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => onNavigate?.('explain')}
-              className="text-xs"
-            >
-              <Brain className="h-3 w-3 mr-1" />
-              Explain
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => onNavigate?.('train')}
-              className="text-xs"
-            >
-              <Target className="h-3 w-3 mr-1" />
-              Train
             </Button>
           </div>
         </div>

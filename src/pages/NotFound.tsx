@@ -33,7 +33,7 @@ const NotFound = () => {
         <Button asChild className="bg-primary hover:bg-primary/90">
           <a href="/" className="inline-flex items-center space-x-2">
             <Home className="h-4 w-4" />
-            <span>Return to Dashboard</span>
+            <span>Back to Research</span>
           </a>
         </Button>
       </div>

@@ -2,7 +2,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AIChat } from "./components/AIChat";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { AppLayout } from "@/components/layout/AppLayout";
+import Research from "@/pages/Research";
+import StockReport from "@/pages/StockReport";
+import Assistant from "@/pages/Assistant";
+import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -11,19 +16,16 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto py-8">
-          <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold tracking-tight mb-2">
-              InvesTech.AI
-            </h1>
-            <p className="text-xl text-muted-foreground mb-4">
-              AI-powered financial sentiment analysis and market prediction
-            </p>
-          </div>
-          <AIChat />
-        </div>
-      </div>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Research />} />
+            <Route path="/stock/:ticker" element={<StockReport />} />
+            <Route path="/assistant" element={<Assistant />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
