@@ -1,16 +1,4 @@
-// Configuration constants adapted from Python environment variables
-export const CONFIG = {
-  DATA_DIR: "./data",
-  MODELS_DIR: "./models", 
-  VECTOR_DIR: "./models/vector",
-  REGION_WEIGHT_IN: 1.5,
-  USE_LLMS_FOR_EVENTS: true,
-  
-  // API Configuration
-  OPENAI_MODEL: "gpt-4.1-2025-04-14",
-  MAX_COMPLETION_TOKENS: 2000,
-} as const;
-
+// System prompt for the AI Financial Assistant (moved server-side from src/config/constants.ts).
 export const SYSTEM_PROMPT = `You are a financial AI assistant with a comprehensive analysis framework:
 
 1. QUANTITATIVE BRAIN

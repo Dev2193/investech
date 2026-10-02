@@ -1,0 +1,25 @@
+{
+  "name": "investech-api",
+  "private": true,
+  "version": "1.0.0",
+  "description": "InvesTech.AI backend: stock research data proxy (SEC EDGAR, FRED, Finnhub, Yahoo) and AI chat",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.0",
+    "hono": "^4.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.5",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.3"
+  }
+}

@@ -43,9 +43,8 @@ export function SectionError({ error, what }: { error: unknown; what?: string })
         <p className="text-muted-foreground">{e.message}</p>
         {hint && (
           <p className="text-muted-foreground">
-            {hint.note} Add <code className="rounded bg-muted px-1 py-0.5 text-foreground">{hint.secret}</code> as a Supabase
-            edge-function secret (or in <code className="rounded bg-muted px-1 py-0.5 text-foreground">.env.local</code> for
-            local dev).{" "}
+            {hint.note} Set <code className="rounded bg-muted px-1 py-0.5 text-foreground">{hint.secret}</code> as an environment
+            variable on the API server (locally: <code className="rounded bg-muted px-1 py-0.5 text-foreground">server/.env</code>).{" "}
             <a className="text-primary underline underline-offset-2" href={hint.url} target="_blank" rel="noreferrer">
               {hint.url.replace("https://", "")}
             </a>

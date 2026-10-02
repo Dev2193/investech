@@ -37,17 +37,20 @@ const StockReport = () => {
           <h2 className="text-2xl font-bold">Research backend not connected</h2>
         </div>
         <p className="text-muted-foreground">
-          The report for <span className="font-semibold text-foreground">{r.ticker}</span> is built by the <code className="rounded bg-muted px-1">stock-research</code>{" "}
-          Supabase edge function, which fetches SEC, FRED, Finnhub and price data server-side (those sources can't be called directly from a browser). The
-          function couldn't be reached, so no data is shown.
+          The report for <span className="font-semibold text-foreground">{r.ticker}</span> is built by the InvesTech API server, which fetches SEC,
+          FRED, Finnhub and price data server-side (those sources can't be called directly from a browser). The API couldn't be reached, so no data is
+          shown.
         </p>
         <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
-          <li>Connect (or reconnect) Supabase for this project in Lovable so the edge functions in <code>supabase/functions</code> are deployed.</li>
           <li>
-            Add the edge-function secret <code>SEC_USER_AGENT</code> (e.g. "InvesTech.AI you@yourdomain.com") — required by SEC EDGAR.
+            Deploy the API in <code>server/</code> (Docker, Render, Railway, Fly…) or run it locally with <code>npm run dev</code>.
           </li>
           <li>
-            Optional: add <code>FINNHUB_API_KEY</code> (free at finnhub.io/register) for peers, analyst ratings, news and market cap.
+            On the API host set <code>SEC_USER_AGENT</code> (e.g. "InvesTech.AI you@yourdomain.com") — required by SEC EDGAR — and optionally{" "}
+            <code>FINNHUB_API_KEY</code> (free at finnhub.io/register).
+          </li>
+          <li>
+            Point the site at it with <code>VITE_API_BASE_URL</code> (e.g. https://your-api.onrender.com) and rebuild.
           </li>
         </ol>
         <p className="text-xs text-muted-foreground">Details: {(r.company.error as Error).message}</p>

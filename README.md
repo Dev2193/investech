@@ -18,43 +18,88 @@ The AI Assistant (OpenAI chat, bring-your-own key) lives at `/assistant`.
 ## Architecture
 
 ```
-src/pages/Research.tsx          landing page + ticker search
-src/pages/StockReport.tsx       /stock/:ticker report
-src/hooks/useStockResearch.ts   react-query orchestration of all data + scoring
-src/services/research/
-  transport.ts                  calls the edge function (or local dev proxy)
-  secEdgar.ts  prices.ts  fred.ts  finnhub.ts   one module per data source
-  sectors.ts                    SIC → sector/ETF, sector macro indicators
-  newsSentiment.ts              keyword headline tone
-  analysis.ts                   ratios, section scores, verdict (all rules in one place)
-src/components/research/        report sections
-supabase/functions/stock-research/   edge function (holds secrets, fixes CORS)
-supabase/functions/_shared/researchProxy.ts  shared handler (edge function + Vite dev server)
+src/                              React + Vite web app (deployed by Lovable)
+  pages/Research.tsx              landing page + ticker search
+  pages/StockReport.tsx           /stock/:ticker report
+  pages/Assistant.tsx             /assistant AI chat
+  hooks/useStockResearch.ts       react-query orchestration of all data + scoring
+  lib/api.ts                      API client (VITE_API_BASE_URL)
+  services/research/              client-side data shaping + scoring, one module per source
+    secEdgar.ts prices.ts fred.ts finnhub.ts sectors.ts newsSentiment.ts analysis.ts
+  components/research/            report sections
+
+server/                           InvesTech API — Node 20 + TypeScript + Hono
+  src/index.ts                    HTTP server (PORT, default 8787)
+  src/app.ts                      routes, CORS, per-client rate limits
+  src/routes/research.ts          POST /api/research  { source, path, params }
+  src/routes/chat.ts              POST /api/chat      { messages }  (OpenAI, key server-side)
+  src/sources/                    sec.ts yahoo.ts fred.ts finnhub.ts — one module per upstream
+  src/lib/                        cache (TTL + in-flight de-dupe), upstream limiters, errors
+  Dockerfile
 ```
 
-SEC EDGAR, FRED and Yahoo don't allow browser (CORS) requests, and API keys shouldn't ship to the browser, so all data goes through the `stock-research` Supabase edge function. The handler only proxies an allow-list of endpoints.
+SEC EDGAR, FRED and Yahoo don't allow browser (CORS) requests, and API keys (Finnhub, OpenAI) must not ship to the browser, so the web app talks only to the API server. The server only proxies an allow-list of endpoints, caches responses in memory (SEC facts 6h, prices/Finnhub 15 min, FRED 6h), de-duplicates concurrent identical calls, throttles each upstream below its free-tier limit (SEC ≤ 8 req/s, Finnhub ≤ 55 req/min) and rate-limits each client IP.
 
-## Configuration (API keys)
+API routes: `GET /health`, `GET /api/status` (which integrations are configured — booleans only), `POST /api/research`, `POST /api/chat`. Every `/api` response is `{ ok: true, data }` or `{ ok: false, code, message, source }` with codes `missing_key | rate_limited | not_found | bad_request | upstream`.
 
-Set these as **Supabase edge-function secrets** (Supabase dashboard → Edge Functions → Secrets, or via Lovable's Supabase integration):
+## Environment variables
 
-| Secret | Required? | Where to get it | Used for |
+**API server** (`server/.env` locally, or the host's environment settings in production):
+
+| Variable | Required? | Where to get it | Used for |
 | --- | --- | --- | --- |
 | `SEC_USER_AGENT` | **Yes** | No signup. SEC requires a descriptive User-Agent with a contact email, e.g. `InvesTech.AI you@yourdomain.com` ([SEC policy](https://www.sec.gov/os/accessing-edgar-data)) | Ticker lookup, financials, industry (SIC), peer revenue |
 | `FINNHUB_API_KEY` | Optional (recommended) | Free at [finnhub.io/register](https://finnhub.io/register) — 60 calls/min | Peers, analyst recommendations, company news, market cap |
-| `FRED_API_KEY` | Optional | Free at [fred.stlouisfed.org/docs/api/api_key.html](https://fred.stlouisfed.org/docs/api/api_key.html) | Macro data via the official API (without it, FRED's public CSV download is used) |
+| `FRED_API_KEY` | Optional | Free at [fred.stlouisfed.org/docs/api/api_key.html](https://fred.stlouisfed.org/docs/api/api_key.html) | Macro data via the official API (otherwise FRED's public CSV download) |
+| `OPENAI_API_KEY` | Optional | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) (paid) | AI Assistant chat. `OPENAI_MODEL` overrides the model (default `gpt-4.1-2025-04-14`) |
+| `ALLOWED_ORIGINS` | Recommended in prod | — | Comma-separated CORS origins, e.g. `https://investech.ai,https://<project>.lovable.app` (default `*`) |
+| `PORT` | Set by most hosts | — | Listen port (default 8787) |
+| `RATE_LIMIT_RESEARCH_PER_MIN` / `RATE_LIMIT_CHAT_PER_MIN` | Optional | — | Per-IP budgets (defaults 300 / 20) |
+
+**Web app** (`.env`, committed — public values only):
+
+| Variable | Purpose |
+| --- | --- |
+| `VITE_API_BASE_URL` | URL of the deployed API, e.g. `https://investech-api.onrender.com`. Empty = same origin (dev proxy). Baked in at build time. |
 
 Price history uses Yahoo Finance's public chart endpoint (no key; unofficial).
 
-### Local development
+## Run locally
 
 ```sh
 npm i
-cp .env.example .env.local   # then fill SEC_USER_AGENT (and optionally FINNHUB_API_KEY)
-npm run dev                  # http://localhost:8080
+cp server/.env.example server/.env   # set SEC_USER_AGENT (and optionally FINNHUB_API_KEY, OPENAI_API_KEY)
+npm run dev                          # web on http://localhost:8080 + API on http://localhost:8787
 ```
 
-With `VITE_RESEARCH_TRANSPORT=local`, the Vite dev server serves `/api/research` using the same handler as the edge function, reading the secrets from `.env.local` (non-`VITE_` variables are never bundled into the client).
+`npm run dev` starts both with `concurrently` (it installs `server/` dependencies on first run); Vite proxies `/api` to the API. Other scripts: `npm run dev:web`, `npm run server` (API only), `npm run server:build`, `npm run server:start`, `npm run server:typecheck`.
+
+## Deploy the API
+
+The API is a plain Node app in `server/` with a Dockerfile, so any host works. No database or disk is needed.
+
+**Render** (Web Service): New → Web Service → this repo, *Root Directory* `server`, Runtime *Docker* (or Node with build `npm ci && npm run build`, start `npm start`). Health check path `/health`. Add the env vars above.
+
+**Railway**: New project → Deploy from GitHub repo → set the service *Root Directory* to `server` (it picks up the Dockerfile), add the env vars, then *Generate Domain*.
+
+**Fly.io**: `cd server && fly launch` (uses the Dockerfile; internal port 8787), then `fly secrets set SEC_USER_AGENT="InvesTech.AI you@domain.com" FINNHUB_API_KEY=... OPENAI_API_KEY=...` and `fly deploy`.
+
+**Any Docker host**:
+
+```sh
+docker build -t investech-api ./server
+docker run -p 8787:8787 -e SEC_USER_AGENT="InvesTech.AI you@domain.com" -e FINNHUB_API_KEY=... investech-api
+```
+
+Then check `https://<your-api>/health` and `https://<your-api>/api/status`.
+
+### Point the Lovable site at the API
+
+1. Set `VITE_API_BASE_URL` in `.env` to the API's public URL (edit the file in Lovable or GitHub, commit) — Lovable rebuilds the site with it.
+2. Set `ALLOWED_ORIGINS` on the API to the site's origins (custom domain and `*.lovable.app` preview URL).
+3. Open `/stock/AAPL` on the site. If the API is unreachable the page shows a "backend not connected" card instead of data.
+
+The in-memory cache and rate limits are per instance; one small instance is plenty for personal use. For several instances, add a shared cache/limiter (e.g. Redis).
 
 ### Known limitations
 
